@@ -1,7 +1,8 @@
-C program code : 
+//C program code : 
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 void createFile(){
     FILE *fptr;
@@ -45,7 +46,7 @@ void showFile(){
         char content[10000];
         printf("\nThe content of the file is as follows:\n");
         while(fgets(content, 10000, fptr)){
-            printf(content);
+            printf("%s", content);
         }
         fclose(fptr);
     }   
@@ -91,6 +92,70 @@ void deleteFile(){
     }else{
         printf("Couldn't delete the file\n");
     }
+}
+
+void compareFile(){
+    FILE *fptr1;
+    FILE *fptr2;
+
+    char name1[1000];
+    char name2[1000];
+
+    printf("Enter the name of the first file(with file extension): ");
+    scanf("%s", name1);
+    getchar();
+    printf("Enter the name of the second file(with file extension): ");
+    scanf("%s", name2);
+    getchar();
+
+    fptr1 = fopen(name1, "r");
+    fptr2 = fopen(name2, "r");
+
+    if(fptr1 == NULL || fptr2 == NULL){
+        printf("Couldn't open the file\n");
+    }
+
+    char content1[1000];
+    char content2[1000];
+    int line_count = 1;
+    int difference = 0;
+
+    while(true){
+        bool hascontent1 = fgets(content1, 1000, fptr1) != NULL;
+        bool hascontent2 = fgets(content2, 1000, fptr2) != NULL;
+
+        if(!hascontent1 && !hascontent2){
+            break;
+        }
+
+        if(!hascontent1){
+            printf("File 1 is shorter. Comparing up to %d lines\n", line_count);
+            difference ++;
+            break;
+        }
+
+        if(!hascontent2){
+            printf("File 2 is shorter. Comparing up to %d lines\n", line_count);
+            difference ++;
+            break;
+        }
+
+        if(strcmp(content1, content2) != 0){
+            printf("Difference found at line %d\n", line_count);
+            printf("File 1: %s", content1);
+            printf("File 2: %s", content2);
+            difference ++;
+        }
+        line_count ++;
+    }
+
+    if(difference == 0){
+        printf("The files are identical\n");
+    } else if(difference > 0){
+        printf("Found %d differences\n", difference);
+    }
+    fclose(fptr1);
+    fclose(fptr2);
 }
 
 void appendLine(){
@@ -228,7 +293,7 @@ void showLine(){
     char content[10000];
     while(fgets(content, 10000, fptr)){
         if(line == lineNum){
-            printf(content);
+            printf("%s", content);
             showed = true;
         }
         line++;
@@ -251,6 +316,7 @@ int main(){
         printf("Delete Line -- 6\n");
         printf("Insert Line -- 7\n");
         printf("Show Line -- 8\n");
+        printf("Compare file -- 9\n");
         printf("Any other key for exit\n");
         printf("> ");
         scanf("%c", &choice);
@@ -280,6 +346,9 @@ int main(){
                 break;
             case '8':
                 showLine();
+                break;
+            case '9':
+                compareFile();
                 break;
             default:
                 return 0;
