@@ -374,9 +374,105 @@ void decryptFile(){
     fclose(fptr2);
 }
 
+void removeTextSpaces(){
+    FILE *fptr1;
+    FILE *fptr2;
+
+    char name1[1000];
+    char name2[1000];
+
+    printf("Enter the file name(with file extension): ");
+    scanf("%s", name1);
+    getchar();
+    printf("Enter the new file name(with file extension): ");
+    scanf("%s", name2);
+    getchar();
+
+
+    fptr1 = fopen(name1, "r");
+    fptr2 = fopen(name2, "w");
+
+    if(fptr1 == NULL || fptr2 == NULL){
+        printf("Couldn't open the file\n");
+    }else{
+        char content[1000];
+        while(fgets(content, 1000, fptr1)){
+            char row[1000];
+            int i =0;
+            int n = 0;
+            bool lastChar = false; //to check if the last character is a space
+
+            while(content[i] == ' '){
+                i++;
+            }
+
+            while(content[i] != '\0'){
+                if(content[i] != ' '){
+                    row[n] = content[i];
+                    n++;
+                    lastChar = false;
+                }else if(!lastChar && content[i+1] != '\0' && content[i+1] != '\n'){
+                    row[n] = ' ';
+                    n++;
+                    lastChar = true;
+                }
+                i++;
+            }
+
+            if(n > 0 && row[n-1] != '\n'){
+                row[n] = '\n';
+                n++;
+            }
+
+            row[n] = '\0';
+            fputs(row, fptr2);
+        }
+        printf("Spaces removed\n");
+    }
+    fclose(fptr1);
+    fclose(fptr2);
+}
+
+void removeExtraRows(){
+    FILE *fptr1;
+    FILE *fptr2;
+
+    char name1[1000];
+    char name2[1000];
+
+    printf("Enter the file name(with file extension): ");
+    scanf("%s", name1);
+    getchar();
+    printf("Enter the new file name(with file extension): ");
+    scanf("%s", name2);
+    getchar();
+
+    fptr1 = fopen(name1, "r");
+    fptr2 = fopen(name2, "w");
+
+    if(fptr1 == NULL || fptr2 == NULL){
+        printf("Couldn't open the file\n");
+    }else{
+        char content[1000];
+        bool lastRow = false; //to check if the last row is empty
+
+        while(fgets(content, 1000, fptr1)){
+            bool thisRow = (content[0] == '\n');
+            if(!thisRow || !lastRow){
+                fputs(content, fptr2);
+            }
+            lastRow = thisRow;
+        }
+        printf("Extra rows removed\n");
+    }
+    fclose(fptr1);
+    fclose(fptr2);
+}
+
 int main(){
     char choice;
     char choice2;
+    char choice3;
     while(true){
         printf("\nThese are the following commands possible. Use the number to get started with the particular operation\n");
         printf("Create file -- 1\n");
@@ -422,6 +518,8 @@ int main(){
                 printf("Compare file -- 1\n");
                 printf("Encrypt file -- 2\n");
                 printf("Decrypt file -- 3\n");
+                printf("Remove text spaces -- 4\n");
+                printf("Remove extra rows -- 5\n");
                 printf("> ");
                 scanf("%c", &choice2);
                 getchar();
@@ -434,6 +532,24 @@ int main(){
                         break;
                     case '3':
                         decryptFile();
+                        break;
+                    case '4':
+                        removeTextSpaces();
+                        printf("Would you like to remove the original file? (type y for yes): ");
+                        scanf("%c", &choice3);
+                        getchar();
+                        if(choice3 == 'y'){
+                            deleteFile();
+                        }
+                        break;
+                    case '5':
+                        removeExtraRows();
+                        printf("Would you like to remove the original file? (type y for yes): ");
+                        scanf("%c", &choice3);
+                        getchar();
+                        if(choice3 == 'y'){
+                            deleteFile();
+                        }
                         break;
                     default:
                         printf("Invalid option\n");
