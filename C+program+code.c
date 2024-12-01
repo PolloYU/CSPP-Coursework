@@ -304,8 +304,79 @@ void showLine(){
     fclose(fptr);
 }
 
+void encryptFile(){
+    FILE *fptr1;
+    FILE *fptr2;
+
+    char name1[1000];
+    char name2[1000];
+    int key;
+
+    printf("Enter the file name(with file extension): ");
+    scanf("%s", name1);
+    getchar();
+    printf("Enter the new encrypted file name(with file extension): ");
+    scanf("%s", name2);
+    getchar();
+    printf("Enter the key: ");
+    scanf("%d", &key);
+    getchar();
+
+    fptr1 = fopen(name1, "r");
+    fptr2 = fopen(name2, "w");
+
+    if(fptr1 == NULL || fptr2 == NULL){
+        printf("Couldn't open the file\n");
+    }else{
+        char char1;
+        while((char1 = fgetc(fptr1)) != EOF){
+            char char2 = char1 + key;
+            fputc(char2, fptr2);
+        }
+        printf("Encryption done.Please remember your key is %d\n", key);
+    }
+    fclose(fptr1);
+    fclose(fptr2);
+}
+
+void decryptFile(){
+    FILE *fptr1;
+    FILE *fptr2;
+
+    char name1[1000];
+    char name2[1000];
+    int key;
+
+    printf("Enter the file name(with file extension): ");
+    scanf("%s", name1);
+    getchar();
+    printf("Enter the new decrypted file name(with file extension): ");
+    scanf("%s", name2);
+    getchar();
+    printf("Enter the key: ");
+    scanf("%d", &key);
+    getchar();
+
+    fptr1 = fopen(name1, "r");
+    fptr2 = fopen(name2, "w");
+
+    if(fptr1 == NULL || fptr2 == NULL){
+        printf("Couldn't open the file\n");
+    }else{
+        char char1;
+        while((char1 = fgetc(fptr1)) != EOF){
+            char char2 = char1 - key;
+            fputc(char2, fptr2);
+        }
+        printf("Decrypted file is now created\n");
+    }
+    fclose(fptr1);
+    fclose(fptr2);
+}
+
 int main(){
     char choice;
+    char choice2;
     while(true){
         printf("\nThese are the following commands possible. Use the number to get started with the particular operation\n");
         printf("Create file -- 1\n");
@@ -316,7 +387,7 @@ int main(){
         printf("Delete Line -- 6\n");
         printf("Insert Line -- 7\n");
         printf("Show Line -- 8\n");
-        printf("Compare file -- 9\n");
+        printf("More options -- 9\n");
         printf("Any other key for exit\n");
         printf("> ");
         scanf("%c", &choice);
@@ -348,7 +419,26 @@ int main(){
                 showLine();
                 break;
             case '9':
-                compareFile();
+                printf("Compare file -- 1\n");
+                printf("Encrypt file -- 2\n");
+                printf("Decrypt file -- 3\n");
+                printf("> ");
+                scanf("%c", &choice2);
+                getchar();
+                switch(choice2){
+                    case '1':
+                        compareFile();
+                        break;
+                    case '2':
+                        encryptFile();
+                        break;
+                    case '3':
+                        decryptFile();
+                        break;
+                    default:
+                        printf("Invalid option\n");
+                        break;
+                }
                 break;
             default:
                 return 0;
