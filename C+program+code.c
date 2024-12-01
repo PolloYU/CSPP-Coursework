@@ -113,21 +113,25 @@ void compareFile(){
 
     if(fptr1 == NULL || fptr2 == NULL){
         printf("Couldn't open the file\n");
+        return;
     }
 
     char content1[1000];
     char content2[1000];
-    int line_count = 1;
-    int difference = 0;
+    int line_count = 1; //count the number of lines so that we can know where the difference is
+    int difference = 0; //to count the number of differences
+
 
     while(true){
         bool hascontent1 = fgets(content1, 1000, fptr1) != NULL;
         bool hascontent2 = fgets(content2, 1000, fptr2) != NULL;
 
+        //ending the loop if both files are read over
         if(!hascontent1 && !hascontent2){
             break;
         }
 
+        //if one file is shorter
         if(!hascontent1){
             printf("File 1 is shorter. Comparing up to %d lines\n", line_count);
             difference ++;
@@ -140,6 +144,7 @@ void compareFile(){
             break;
         }
 
+        //comparing the content of the two files
         if(strcmp(content1, content2) != 0){
             printf("Difference found at line %d\n", line_count);
             printf("File 1: %s", content1);
@@ -329,11 +334,11 @@ void encryptFile(){
         printf("Couldn't open the file\n");
     }else{
         char char1;
-        while((char1 = fgetc(fptr1)) != EOF){
-            char char2 = char1 + key;
-            fputc(char2, fptr2);
+        while((char1 = fgetc(fptr1)) != EOF){ //loop until the end of the file
+            char char2 = char1 + key; //encryption
+            fputc(char2, fptr2); //writing the encrypted content to the new file
         }
-        printf("Encryption done.Please remember your key is %d\n", key);
+        printf("Encryption is done.Please remember your key is %d\n", key);
     }
     fclose(fptr1);
     fclose(fptr2);
@@ -353,7 +358,7 @@ void decryptFile(){
     printf("Enter the new decrypted file name(with file extension): ");
     scanf("%s", name2);
     getchar();
-    printf("Enter the key: ");
+    printf("Enter the key: ");//the key used in encryptFile()
     scanf("%d", &key);
     getchar();
 
@@ -365,7 +370,7 @@ void decryptFile(){
     }else{
         char char1;
         while((char1 = fgetc(fptr1)) != EOF){
-            char char2 = char1 - key;
+            char char2 = char1 - key; //decryption
             fputc(char2, fptr2);
         }
         printf("Decrypted file is now created\n");
@@ -408,10 +413,12 @@ void removeTextSpaces(){
 
             while(content[i] != '\0'){
                 if(content[i] != ' '){
+                    //if the character is not a space just copy
                     row[n] = content[i];
                     n++;
                     lastChar = false;
                 }else if(!lastChar && content[i+1] != '\0' && content[i+1] != '\n'){
+                    //if there are spaces together, copy only one space
                     row[n] = ' ';
                     n++;
                     lastChar = true;
@@ -419,11 +426,13 @@ void removeTextSpaces(){
                 i++;
             }
 
+
             if(n > 0 && row[n-1] != '\n'){
                 row[n] = '\n';
                 n++;
             }
 
+            //end the string
             row[n] = '\0';
             fputs(row, fptr2);
         }
@@ -454,14 +463,14 @@ void removeExtraRows(){
         printf("Couldn't open the file\n");
     }else{
         char content[1000];
-        bool lastRow = false; //to check if the last row is empty
+        bool lastRow = false; //check if the last row is empty
 
         while(fgets(content, 1000, fptr1)){
-            bool thisRow = (content[0] == '\n');
+            bool thisRow = (content[0] == '\n'); //check if the row is empty
             if(!thisRow || !lastRow){
                 fputs(content, fptr2);
             }
-            lastRow = thisRow;
+            lastRow = thisRow; //update last row
         }
         printf("Extra rows removed\n");
     }
@@ -483,7 +492,7 @@ int main(){
         printf("Delete Line -- 6\n");
         printf("Insert Line -- 7\n");
         printf("Show Line -- 8\n");
-        printf("More options -- 9\n");
+        printf("More options -- 9\n"); //4b part
         printf("Any other key for exit\n");
         printf("> ");
         scanf("%c", &choice);
@@ -529,9 +538,22 @@ int main(){
                         break;
                     case '2':
                         encryptFile();
+                        printf("Please remember your key\n");
+                        printf("Would you like to remove the original file?\n(make sure you have a backup) (type y for yes): ");
+                        scanf("%c", &choice3);
+                        getchar();
+                        if(choice3 == 'y'){
+                            deleteFile();
+                        }
                         break;
                     case '3':
                         decryptFile();
+                        printf("Would you like to remove the encrypted file? (type y for yes): ");
+                        scanf("%c", &choice3);
+                        getchar();
+                        if(choice3 == 'y'){
+                            deleteFile();
+                        }
                         break;
                     case '4':
                         removeTextSpaces();
