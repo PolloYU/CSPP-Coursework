@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <string.h>
 
+// FILE * fptr; is a way to declare a file pointer
+// fptr = fopen(name, ""); with this we are able to write in the file
+// fclose(fptr); // closes the file
+
 void createFile(){
     FILE *fptr;
     char name[1000];
@@ -12,7 +16,7 @@ void createFile(){
     printf("Enter the file name(with file extension): ");
     scanf("%s", name);
     getchar();
-    fptr = fopen(name, "w");
+    fptr = fopen(name, "w"); //checking if the file was opened 
 
     if(fptr == NULL){
         printf("Couldn't open the file\n");
@@ -24,8 +28,8 @@ void createFile(){
         char content[1000];
         for(int i = 0; i < lines; i++){
             printf("Enter the content for line %d ", i + 1);
-            fgets(content, 1000, stdin);
-            fputs(content, fptr);
+            fgets(content, 1000, stdin); //like a getter to get the input line
+            fputs(content, fptr); // writing the line into the file
         }
         printf("\nFile created\n");
         fclose(fptr);
@@ -45,7 +49,7 @@ void showFile(){
     }else{
         char content[10000];
         printf("\nThe content of the file is as follows:\n");
-        while(fgets(content, 10000, fptr)){
+        while(fgets(content, 10000, fptr)){  // reading each line
             printf("%s", content);
         }
         fclose(fptr);
@@ -53,8 +57,8 @@ void showFile(){
 }
 
 void copyFile(){
-    FILE *ogfptr; //original file
-    FILE *newfptr; //the new file
+    FILE *ogfptr; //original file  // The original file which content's we want to copy
+    FILE *newfptr; //the new file  // the file in which we want to put the content
 
     char ogname[1000];
     char newname[1000];
@@ -94,6 +98,9 @@ void deleteFile(){
     }
 }
 
+/*  Extension of File Operations: Compare Files function.Idea is from question4 itself.        
+    Our team did q4 separately so there is a need for code comparison to prevent errors in merging step.
+    This function can be used for checking differences between text files or directly judge if two files are same. */
 void compareFile(){
     FILE *fptr1;
     FILE *fptr2;
@@ -122,11 +129,12 @@ void compareFile(){
     int difference = 0; //to count the number of differences
 
 
+    //while Loop and the strcmp function learned from Lab 3 can find, count differences and print them out until comparison is finished (one file is fully read).
     while(true){
         bool hascontent1 = fgets(content1, 1000, fptr1) != NULL;
         bool hascontent2 = fgets(content2, 1000, fptr2) != NULL;
 
-        //ending the loop if both files are read over
+        //ending the loop if both files are fully read
         if(!hascontent1 && !hascontent2){
             break;
         }
@@ -177,8 +185,8 @@ void appendLine(){
     }else{
         char content[10000];
         printf("Enter line: ");
-        fgets(content, 10000, stdin);
-        fputs(content, fptr);
+        fgets(content, 10000, stdin);   // reading the input line
+        fputs(content, fptr);           // appending the new line to the file
         fclose(fptr);
     }
 }
@@ -192,7 +200,7 @@ void deleteLine(){
     getchar();
 
     fptr = fopen(name, "r");
-    ftemp = fopen("temp.txt", "w");
+    ftemp = fopen("temp.txt", "w"); //opening a temporary file in writing mode
 
     if(fptr == NULL || ftemp == NULL){
         printf("Couldn't open the file\n");
@@ -209,7 +217,7 @@ void deleteLine(){
         bool deleted = false;
         while(fgets(content, 10000, fptr)){
             if(line != lineNum){
-                fputs(content, ftemp);
+                fputs(content, ftemp); // copying the lines except the one we deleted
             }else{
                 deleted = true;
             }
@@ -272,8 +280,8 @@ void insertLine(){
     }
     fclose(fptr);
     fclose(ftemp);
-    remove(name);
-    rename("temp.txt", name);
+    remove(name);   // Deleting the original file
+    rename("temp.txt", name);   //Renaming the temporary file
 }
 
 void showLine(){
@@ -309,6 +317,11 @@ void showLine(){
     fclose(fptr);
 }
 
+/*  Extra Operations1: Security Operations
+    Idea of this part is the need for users to protect their personal information saved in text files.
+    One solution is to make information unrecognizable. The Lab 1 exercise 1.3 inspired me to modify the text by adding an integer to a char.
+    Users can type a key and easily change the content of text file. */
+
 void encryptFile(){
     FILE *fptr1;
     FILE *fptr2;
@@ -335,7 +348,7 @@ void encryptFile(){
     }else{
         char char1;
         while((char1 = fgetc(fptr1)) != EOF){ //loop until the end of the file
-            char char2 = char1 + key; //encryption
+            char char2 = char1 + key; //use addition for encryption
             fputc(char2, fptr2); //writing the encrypted content to the new file
         }
         printf("Encryption is done.Please remember your key is %d\n", key);
@@ -369,8 +382,10 @@ void decryptFile(){
         printf("Couldn't open the file\n");
     }else{
         char char1;
+        //the fgetc function is learned from Lab 4
+        //when noticing the fgets fputs pair, I searched fputc and found it.
         while((char1 = fgetc(fptr1)) != EOF){
-            char char2 = char1 - key; //decryption
+            char char2 = char1 - key; //use subtraction for decryption
             fputc(char2, fptr2);
         }
         printf("Decrypted file is now created\n");
@@ -378,6 +393,11 @@ void decryptFile(){
     fclose(fptr1);
     fclose(fptr2);
 }
+
+/*  Extra Operation2: Text Structure Operation
+    It is time-consuming to handle those spaces and additional lines in text file using multiple line operations.
+    And it is easy to get error again when correcting text manually.
+    The removeTextSpaces() and removeExtraRows() functions can help users to make the format of text file standard.  */
 
 void removeTextSpaces(){
     FILE *fptr1;
@@ -405,7 +425,7 @@ void removeTextSpaces(){
             char row[1000];
             int i =0;
             int n = 0;
-            bool lastChar = false; //to check if the last character is a space
+            bool lastChar = false; //check if the last character is a space
 
             while(content[i] == ' '){
                 i++;
@@ -413,7 +433,7 @@ void removeTextSpaces(){
 
             while(content[i] != '\0'){
                 if(content[i] != ' '){
-                    //if the character is not a space just copy
+                    //if the character is not a space, just copy
                     row[n] = content[i];
                     n++;
                     lastChar = false;
@@ -463,12 +483,12 @@ void removeExtraRows(){
         printf("Couldn't open the file\n");
     }else{
         char content[1000];
-        bool lastRow = false; //check if the last row is empty
+        bool lastRow = false; //similarly, check if the last row is empty
 
         while(fgets(content, 1000, fptr1)){
             bool thisRow = (content[0] == '\n'); //check if the row is empty
             if(!thisRow || !lastRow){
-                fputs(content, fptr2);
+                fputs(content, fptr2); //copy text and skip extra empty rows
             }
             lastRow = thisRow; //update last row
         }
