@@ -323,7 +323,7 @@ void encryptFile(){
     printf("Enter the new encrypted file name(with file extension): ");
     scanf("%s", name2);
     getchar();
-    printf("Enter the key: ");
+    printf("Enter the key(integer): ");
     scanf("%d", &key);
     getchar();
 
@@ -358,7 +358,7 @@ void decryptFile(){
     printf("Enter the new decrypted file name(with file extension): ");
     scanf("%s", name2);
     getchar();
-    printf("Enter the key: ");//the key used in encryptFile()
+    printf("Enter the key(integer): ");
     scanf("%d", &key);
     getchar();
 
